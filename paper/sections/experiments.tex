@@ -1,0 +1,15 @@
+\section{Experiments}
+\label{sec:experiments}
+
+% P3 drafted an experiments.md in modeling-encoders-Weenuka. Ingest
+% that draft rather than rewriting; numbers land here once trained.
+
+We evaluate on SYSU-CD, LEVIR-CD (256$\times$256 non-overlapping
+crops, 7{,}120 / 1{,}024 / 2{,}048), and PCD/TSUNAMI, with
+scene-disjoint splits. Principal models use seeds $\{0,1,2\}$.
+Baselines: RGB/SSIM, FC-Siam-Diff \cite{daudt_2018_fcsiam}, Siamese
+ResNet-18. Proposed: encoder + signed fusion + bounded alignment +
+confidence head + pair-order consistency (see P4). Ablations follow
+the B-grid in the research brief (fusion, alignment, gate, pair-order).
+Swap-consistency is measured on \emph{every} model, including those
+not trained with the consistency loss (B7).

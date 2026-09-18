@@ -1,0 +1,2 @@
+# DRAFT — see configs/model/README.md
+_target_: cdlib.models.fusion.absdiff.AbsDiffFusion

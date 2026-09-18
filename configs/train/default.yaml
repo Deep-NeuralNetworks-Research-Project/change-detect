@@ -1,0 +1,32 @@
+# Default training config
+
+seed: 42
+epochs: 200
+batch_size: 8
+val_interval: 1       # validate every N epochs
+
+optimizer:
+  name: adamw
+  lr: 3e-4
+  weight_decay: 0.01
+
+scheduler:
+  name: cosine
+  T_max: ${train.epochs}
+  eta_min: 1e-6
+
+# Checkpoint settings (P2 — wall-clock, not epoch-based)
+checkpoint:
+  interval_minutes: 15    # every 15 min of wall-clock
+  keep_last: 2
+  keep_best: 1
+  resume_from: null       # set to "auto" for preemption recovery
+
+# W&B logging
+wandb:
+  project: cd-project
+  entity: null            # set via env or override
+  log_interval: 10        # log every N steps
+
+# Mixed precision
+amp: true

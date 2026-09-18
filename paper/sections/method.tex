@@ -1,0 +1,50 @@
+\section{Method}
+\label{sec:method}
+
+% P2 drafts baselines + implementation; P4 drafts the proposed
+% contribution. P5 keeps this file as the integration point and the
+% evaluation-protocol subsection.
+
+\subsection{Evaluation protocol}
+\label{sec:method-eval}
+
+\paragraph{Overlap.}
+Primary: aggregate changed-class precision, recall, F1, and IoU,
+accumulated over every valid pixel of the test set. Secondary:
+per-image mF1, excluding true-negative-only images (reported instead
+as image-level false-alert rate). Changed-pixel ratio $\pi$ is stated
+for every split and every nuisance stratum. The decision threshold is
+selected on validation scenes only, and we record whether it is
+F1-optimal or precision-constrained.
+
+\paragraph{Boundary and regions.}
+Boundary IoU \cite{cheng_2021_boundaryiou} with
+\texttt{dilation\_ratio}=0.02; HD95 and average surface distance with
+empty-mask guards. Connected components use 8-connectivity. We sweep
+minimum region size $k\in\{1,5,20,50\}$ rather than hiding a single
+$k$. Object-level F1 uses greedy IoU matching at $\tau=0.5$.
+
+\paragraph{Calibration and deferral.}
+Class-wise and foreground-restricted ECE with equal-mass bins; Brier
+(with Murphy reliability) and NLL. Temperature $T$ is fitted on a
+shift-representative validation slice \cite{ovadia_2019_shift}.
+Pair-level scores: max-softmax-response aggregate (baseline) and
+Soft-Dice-Confidence \cite{gauthier_2024_sdc}. We report AURC and
+E-AURC and pick a deferral operating point on validation.
+
+\paragraph{Nuisance suite.}
+Corruptions (brightness/gamma, ASC-CDL, blur, JPEG, H.264/HEVC
+round-trip, shadow, viewpoint, occlusion) are applied to exactly one
+frame, both directions. Primary robustness scalar: F1 retention vs.\
+clean.
+
+\paragraph{Efficiency.}
+Pair-input FLOPs via \texttt{torch.utils.flop\_counter} (true FLOPs;
+MACs reported as FLOPs$/2$). Latency: warm-up excluded, CUDA events,
+median + IQR, GPU model logged every run. Peak memory:
+\texttt{max\_memory\_reserved} headline.
+
+\paragraph{Seeds.}
+$\ge 3$ seeds for principal models. We report mean $\pm$ std and
+median [min, max], plus bootstrap CIs over the test set. We do not
+run significance tests at $n=3$.

@@ -1,0 +1,8 @@
+# BCE + Dice loss
+# WARNING: Dice hurts calibration (Mehrtash et al., IEEE TMI 2020).
+# Talk to P5 before finalising — may need temperature scaling
+# or a calibration-aware auxiliary term.
+
+name: bce_dice
+bce_weight: 0.5
+dice_weight: 0.5

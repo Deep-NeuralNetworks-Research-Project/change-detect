@@ -1,0 +1,21 @@
+# Proposed EfficientNet-based model
+# Composes: encoder + signed_fusion + bounded_alignment + decoder + heads
+#
+# CAUTION: EfficientNet's low FLOPs ≠ low wall-clock on T4/P100.
+# Depthwise separable convs + unfused SiLU can be SLOWER than ResNet-18.
+# Benchmark step time first. Default to ResNet-18 if speed matters.
+
+name: proposed_effnet
+encoder:
+  name: efficientnet_b0
+  weights: imagenet
+fusion:
+  name: signed_fusion
+alignment:
+  name: bounded
+  max_offset: 4
+decoder:
+  name: unet_decoder
+heads:
+  confidence: true
+  directional: true

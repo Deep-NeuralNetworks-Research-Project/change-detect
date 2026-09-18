@@ -1,0 +1,4 @@
+# DRAFT — see configs/model/README.md
+_target_: cdlib.models.encoders.efficientnet.EfficientNetB0Encoder
+pretrained: true
+use_c5: true

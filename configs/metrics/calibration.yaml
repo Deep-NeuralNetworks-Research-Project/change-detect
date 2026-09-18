@@ -1,0 +1,5 @@
+_target_: cdlib.metrics.calibration.CalibrationMetric
+threshold: 0.5
+n_bins: 15
+pair_score: sdc
+pair_error: pair_f1

@@ -1,0 +1,59 @@
+# Our own authorised video set — the target domain, and the only dataset with real
+# nuisance labels.
+#
+# KEY NAME: `research/06` §1 calls the config `video_set.yaml` while naming the module
+# `video_pairs.py` and the output directory `data/video_pairs/`. Two of three say
+# video_pairs, so that is the registry key. Deviation recorded in docs/HANDOFF.md §7.
+#
+# Mask encoding is ours: 0 unchanged, 255 changed, 128 ignore -> -1. The public sets
+# have no ignore convention; ours exists so uncertain annotation stays uncertain
+# instead of becoming fabricated "unchanged" ground truth.
+#
+# Produced by `python scripts/prepare_video_set.py --ref ref.mp4 --edit edit.mp4
+# --out data/video_pairs/`. Footage and frames are gitignored (CLAUDE.md rule 9);
+# only the manifest and checksums are tracked.
+
+name: video_pairs
+root: null
+
+manifest_name: manifest.jsonl
+
+# Prefer an explicit scene->split mapping written by the split step. Without it the
+# loader falls back to a deterministic scene-level hash partition — never a pair-level
+# one. Regenerate with cdlib.data.splits.scene_disjoint_split once annotation lands.
+splits_file: splits.json
+split_ratios:
+  train: 0.7
+  val: 0.15
+  test: 0.15
+split_seed: cdlib.video_pairs.v1
+
+pairs_dir: pairs
+ref_suffix: _ref.png
+edit_suffix: _edit.png
+mask_suffix: _mask.png
+ignore_grey_level: 128
+changed_grey_level: 255
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.0
+    rot90: 0.0
+    affine_p: 0.3
+    rotate: 5.0
+    translate: 0.03
+    scale: [0.95, 1.05]
+  photometric:
+    # Deliberately milder than the aerial sets: the edited-vs-reference pair already
+    # carries real nuisance (grade, codec, camera move). Piling synthetic nuisance on
+    # top of genuine nuisance risks swamping the signal we are trying to learn.
+    brightness_contrast_p: 0.5
+    gamma_p: 0.3
+    blur_p: 0.15
+    jpeg_p: 0.25
+  splits:
+    # val_shift is the nuisance-shift-heavy split research/04 §4 requires for fitting
+    # temperature scaling. Fitting T on clean val under-corrects under shift.
+    val_shift: {geometric: false, photometric: true}

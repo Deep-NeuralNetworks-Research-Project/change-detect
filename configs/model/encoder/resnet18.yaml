@@ -1,0 +1,5 @@
+# DRAFT — see configs/model/README.md
+_target_: cdlib.models.encoders.resnet.ResNet18Encoder
+pretrained: true
+use_c5: true       # false -> drop C5, decode from C2-C4 (stride-32 ablation)
+dilate_last: false  # true  -> atrous C5, stride 16 instead of 32 (stride-32 ablation)

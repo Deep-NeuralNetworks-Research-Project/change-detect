@@ -1,0 +1,14 @@
+\begin{abstract}
+We study binary semantic change detection on paired RGB frames as a
+\emph{human-in-the-loop reviewer aid}: the system must flag meaningful
+edits while suppressing nuisance (lighting, colour grading, blur,
+codec artifacts, viewpoint, occlusion) and must expose calibrated
+confidence so a reviewer can defer. We report aggregate (corpus) F1 as
+the primary overlap metric, not per-image averaged F1
+\cite{corley_2024_reality}, always with the changed-pixel ratio; we
+add boundary quality, connected-component false-alert rates, a
+one-frame nuisance corruption suite, class-wise equal-mass ECE / Brier,
+and pair-level risk--coverage. Efficiency numbers (pair-input FLOPs,
+latency median+IQR, peak reserved memory) are logged with the GPU
+model on every run. This is not a production decision tool.
+\end{abstract}

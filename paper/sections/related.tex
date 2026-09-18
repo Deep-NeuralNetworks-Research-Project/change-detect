@@ -1,0 +1,32 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Change detection.}
+Fully convolutional Siamese networks \cite{daudt_2018_fcsiam} remain
+the mandatory baseline. A well-tuned plain U-Net is competitive with
+much of the ``SOTA'' once the evaluation protocol is held fixed
+\cite{corley_2024_reality}; we therefore treat baseline recipes as
+seriously as the proposed model.
+
+\paragraph{Boundary quality.}
+Region IoU is insensitive to boundary error on large objects.
+Boundary IoU \cite{cheng_2021_boundaryiou} is scale-balanced and is
+our primary boundary metric (\texttt{dilation\_ratio}=0.02). HD95 is
+reported as a secondary, pixel-interpretable number.
+
+\paragraph{Calibration and selective prediction.}
+Guo et al.\ \cite{guo_2017_calibration} established temperature
+scaling; Nixon et al.\ recommend equal-mass bins; Ovadia et al.\
+\cite{ovadia_2019_shift} showed that in-distribution $T$ does not
+transfer under shift. Pair-level deferral follows the risk--coverage
+framework of Geifman \& El-Yaniv, with Soft Dice Confidence
+\cite{gauthier_2024_sdc} as the primary ranking score and
+max-softmax-response as the baseline. Dice-induced overconfidence is
+documented by Mehrtash et al.\ \cite{mehrtash_2020_calibration} and
+Yeung et al.\ \cite{yeung_2023_dscpp}; Focal loss, by contrast,
+improves calibration \cite{mukhoti_2020_focal}.
+
+\paragraph{Robustness.}
+ImageNet-C \cite{hendrycks_2019_imagenetc} supplies the severity
+philosophy; we re-tune the schedule for paired RGB frames and apply
+each corruption to \emph{one} frame of the pair only.

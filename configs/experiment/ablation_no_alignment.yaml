@@ -1,0 +1,13 @@
+# @package _global_
+
+# Ablation: proposed model WITHOUT alignment module
+# Swap bounded alignment -> identity (no-op)
+# This tests whether alignment contributes to the result
+
+defaults:
+  - override /model: proposed_effnet
+  - _self_
+
+model:
+  alignment:
+    name: identity    # swap ALIGNMENT_REGISTRY entry; everything else unchanged

@@ -1,0 +1,41 @@
+repos:
+  # Code formatting
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        args: [--line-length=100, --target-version=py310]
+
+  # Linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.8
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  # General file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+
+  # Strip notebook outputs (eliminates diff noise)
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.7.1
+    hooks:
+      - id: nbstripout
+
+  # Custom: grep for hardcoded Colab/Kaggle paths outside notebooks/
+  - repo: local
+    hooks:
+      - id: no-hardcoded-runtime-paths
+        name: No hardcoded /content/ or /kaggle/ paths outside notebooks
+        entry: bash -c 'git diff --cached --name-only | grep -v "^notebooks/" | xargs -r grep -lnE "/(content|kaggle)/" && echo "ERROR: Hardcoded runtime paths found outside notebooks/" && exit 1 || exit 0'
+        language: system
+        types: [python]
+        pass_filenames: false

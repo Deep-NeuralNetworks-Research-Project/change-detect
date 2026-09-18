@@ -1,0 +1,6 @@
+# Compose group. `python -m cdlib.cli.evaluate +metrics=all`
+defaults:
+  - segmentation
+  - calibration
+  - robustness
+  - _self_

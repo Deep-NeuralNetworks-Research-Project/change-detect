@@ -1,0 +1,2 @@
+_target_: cdlib.metrics.robustness.RobustnessMetric
+threshold: 0.5

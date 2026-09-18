@@ -1,0 +1,5 @@
+# metric: segmentation
+# Hydra-shaped draft. P2 owns the real config root; this file documents the _target_.
+_target_: cdlib.metrics.segmentation.SegmentationMetric
+threshold: 0.5
+threshold_protocol: f1_optimal

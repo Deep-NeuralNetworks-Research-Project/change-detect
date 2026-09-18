@@ -1,0 +1,50 @@
+# PCD / TSUNAMI — 100 street-level panorama pairs, 224x1024 equirectangular.
+#
+# SINGLE POINT OF FAILURE (research/02 §4, P1 role file): the original host is dead,
+# only TSUNAMI is downloadable, GSV is not hosted anywhere, and no third-party mirror
+# exists. Archive to team storage the moment it is obtained. Do not let GSV gate any
+# deliverable — `subset: GSV` yields an empty dataset with a warning, never an error.
+#
+# Protocol is 5-fold cross-validation over 20-pair folds. There is no published
+# train/val/test partition, so `val` is carved out of the training folds — OUR
+# decision, documented in docs/DATA_CARD.md, not a published protocol.
+#
+# Folds are assigned at PANORAMA level before any cropping (research/02 §8): patches
+# of one panorama crossing a fold boundary is the leakage failure mode.
+#
+# No changed-pixel ratio is published for PCD. `changed_pixel_stats()["source"]`
+# reports "unavailable" until the data is on disk rather than inventing a number.
+
+name: pcd
+root: null
+
+subset: TSUNAMI     # GSV is not obtainable; see above
+fold: 0             # 0..4; sweep with `-m data.fold=0,1,2,3,4`
+n_folds: 5
+fold_scheme: contiguous
+val_fraction: 0.125
+cal_fraction: 0.0
+
+dir_t0: t0
+dir_t1: t1
+dir_mask: mask
+image_ext: .jpg
+mask_ext: .bmp
+
+crop_size: null     # null = whole panorama; set to crop into patches
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.0      # street-level imagery has a canonical "up"
+    rot90: 0.0
+    affine_p: 0.3
+    rotate: 5.0
+    translate: 0.03
+    scale: [0.95, 1.05]
+  photometric:
+    brightness_contrast_p: 0.8
+    gamma_p: 0.5
+    blur_p: 0.2
+    jpeg_p: 0.3

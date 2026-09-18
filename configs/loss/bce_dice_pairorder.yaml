@@ -1,0 +1,7 @@
+# BCE + Dice + Pair-Order Consistency loss
+# For the proposed model with signed fusion
+
+name: bce_dice_pairorder
+bce_weight: 0.5
+dice_weight: 0.5
+pairorder_weight: 0.1

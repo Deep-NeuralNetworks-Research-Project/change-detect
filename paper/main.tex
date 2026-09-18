@@ -1,0 +1,38 @@
+% P5 owns main.tex. One section file per author-slot so merges stay small.
+% Overleaf: ACM SIG Proceedings template (acmart, sigconf).
+% Sync this folder to the shared Overleaf project via GitHub integration.
+\documentclass[sigconf]{acmart}
+
+\acmConference[Moratuwa CSE]{University of Moratuwa CSE semester project}{2026}{Moratuwa, Sri Lanka}
+
+\title{Pair-Order Consistent and Uncertainty-Aware Semantic Change Detection from Paired RGB Frames}
+
+\author{Ekanayake}
+\author{Lelwala}
+\author{Pabasara}
+\author{Bulagala}
+\author{Rajapaksha}
+\affiliation{%
+  \institution{University of Moratuwa}
+  \department{Department of Computer Science \& Engineering}
+  \country{Sri Lanka}
+}
+
+\renewcommand{\shortauthors}{Ekanayake et al.}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/intro}
+\input{sections/related}
+\input{sections/method}
+\input{sections/experiments}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

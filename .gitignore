@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# W&B
+wandb/
+
+# Secrets — never commit
+.env
+.netrc
+
+# Per-person Claude overlay
+CLAUDE.local.md
+
+# Video data — restricted, never commit
+data/video_raw/
+
+# Results and checkpoints (tracked via W&B / Drive, not git)
+results/
+checkpoints/
+
+# Raw / processed datasets
+data/raw/
+data/processed/
+
+# Original notes live in docs/member-tracks/
+files (9)/

@@ -1,0 +1,41 @@
+# LEVIR-CD — 637 VHR Google Earth building pairs at 1024x1024 @ 0.5 m/px.
+#
+# CROP POLICY IS NOT NEGOTIABLE (root CLAUDE.md rule 3): 256x256 non-overlapping
+# crops, giving 7,120 / 1,024 / 2,048 from the official 445 / 64 / 128 full pairs.
+# Any other crop policy makes our numbers comparable to nothing, because essentially
+# every published CD result uses this one.
+#
+# Changed-pixel ratio 4.65% (research/02 §3) — severe imbalance. Plain BCE collapses
+# to all-background here; P2 recomputes loss weights per stage from
+# `dataset.changed_pixel_ratio`.
+#
+# Licence: academic / non-commercial, PLUS Google Earth ToS on top. See docs/DATA_CARD.md.
+
+name: levir_cd
+root: null
+
+crop_size: 256      # do not change; see above
+dir_a: A
+dir_b: B
+dir_label: label
+
+# All 16 crops of one full tile share a scene_id, so they cannot be split apart.
+# 16 crops of one 1024x1024 tile are spatially autocorrelated near-duplicates, and
+# letting them cross a split is exactly the leakage failure mode of rule 2.
+cache_size: 8       # bounded LRU over decoded tiles; 16 crops would otherwise decode 16x
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.5
+    rot90: 0.5
+    affine_p: 0.5
+    rotate: 10.0
+    translate: 0.05
+    scale: [0.9, 1.1]
+  photometric:
+    brightness_contrast_p: 0.8
+    gamma_p: 0.5
+    blur_p: 0.2
+    jpeg_p: 0.3

@@ -1,0 +1,42 @@
+# VideoSham — fallback if the authorised video set falls through.
+#
+# `research/02` §7 rates it the closest structural analog to our target domain: 352
+# real + 352 professionally edited (After Effects) pairs, six attack types, with
+# per-attack localisation ground truth. It already frames the task as reference vs
+# edited version of the same footage, which no aerial or street dataset does.
+#
+# NOT DOWNLOADED. Source: adobe-research/VideoSham-dataset (arXiv:2207.13064).
+# VideoSham ships videos plus annotation, not extracted frames — run
+# scripts/prepare_video_set.py over them first; this reads that output.
+#
+# nuisance_label is UNKNOWN (-1). VideoSham's "attack type" describes the edit, which
+# is our positive class, not a nuisance. Do not map it in without agreeing with P5.
+
+name: videosham
+root: null
+
+manifest_name: manifest.jsonl
+splits_file: splits.json
+pairs_dir: pairs
+ref_suffix: _ref.png
+edit_suffix: _edit.png
+mask_suffix: _mask.png
+ignore_grey_level: 128
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.0
+    rot90: 0.0
+    affine_p: 0.3
+    rotate: 5.0
+    translate: 0.03
+    scale: [0.95, 1.05]
+  photometric:
+    brightness_contrast_p: 0.5
+    gamma_p: 0.3
+    blur_p: 0.15
+    jpeg_p: 0.25
+  splits:
+    val_shift: {geometric: false, photometric: true}

@@ -1,0 +1,8 @@
+# Video set dataset config
+# Authorised video footage — restricted, never commit raw data
+# See docs/ETHICS.md for permission/governance details
+
+name: video_pairs
+root: ${oc.env:CDLIB_DATA_ROOT,./data}/video_pairs
+img_size: 256
+num_workers: 4

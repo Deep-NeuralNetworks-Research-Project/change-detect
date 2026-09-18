@@ -1,0 +1,7 @@
+# Siamese ResNet-18 + abs-diff fusion + U-Net decoder (P3 stronger baseline).
+# Give it a real LR sweep and ≥3 seeds; do not treat it as a strawman.
+
+name: siamese_resnet18
+pretrained: true
+use_c5: true
+dilate_last: false

@@ -1,0 +1,3 @@
+# DRAFT — see configs/model/README.md
+_target_: cdlib.models.fusion.signed_fusion.SignedFusion
+mode: signed

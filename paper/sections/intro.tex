@@ -1,0 +1,27 @@
+\section{Introduction}
+\label{sec:intro}
+
+Given a reference frame $I_1$ and an edited frame $I_2$ at the same
+semantic time, we predict a binary mask of \emph{meaningful} edits.
+Nuisance variation between the two passes---camera displacement,
+auto-exposure, colour grading, blur, shadows, occlusion, and video
+codec artifacts---must not fire the detector. The product framing is a
+reviewer aid that reduces search time; calibrated confidence and an
+explicit deferral policy are therefore first-class deliverables, not
+extras.
+
+Two evaluation pitfalls dominate this literature. First, aggregate
+(corpus) F1 and per-image-averaged F1 are not interchangeable under
+the 2--5\% changed-pixel ratios typical of change detection, and mixing
+them is a documented reason numbers do not reconcile across papers
+\cite{corley_2024_reality}. Second, pooled pixel ECE is dominated by
+easy background and can look excellent while the rare changed class is
+badly miscalibrated. We fix both protocols up front and refuse to
+report a headline number that omits the changed-pixel ratio.
+
+A further internal conflict: the planned BCE+Dice training loss is
+known to induce overconfidence \cite{mehrtash_2020_calibration,yeung_2023_dscpp},
+while we also promise calibration plots. We treat post-hoc temperature
+scaling fitted on \emph{shift-representative} data
+\cite{guo_2017_calibration,ovadia_2019_shift} as the default fix, not
+an afterthought.

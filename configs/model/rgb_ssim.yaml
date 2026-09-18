@@ -1,0 +1,6 @@
+# RGB/SSIM non-DNN baseline
+# Zero training cost. Expect failure on nuisance — that's the point.
+
+name: rgb_ssim
+diff_threshold: 0.3
+ssim_threshold: 0.5

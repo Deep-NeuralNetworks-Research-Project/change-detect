@@ -1,0 +1,12 @@
+# @package _global_
+
+# Baseline experiment: FC-Siam-Diff on SYSU-CD
+defaults:
+  - override /data: sysu_cd
+  - override /model: fc_siam_diff
+  - override /loss: bce_dice
+  - _self_
+
+train:
+  epochs: 200
+  batch_size: 8

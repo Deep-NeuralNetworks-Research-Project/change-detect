@@ -1,0 +1,51 @@
+# DAVIS/YTVI video-inpainting localisation — the scale fallback.
+#
+# `research/02` §7: pixel-accurate per-frame masks for the object-removal case, with a
+# documented F1/mIoU protocol. DVI is DAVIS-2016 based (30 train / 20 test sequences,
+# three inpainting methods, 50 videos each); YTVI extends to 3,471 YouTube-VOS videos.
+#
+# Use as a pretraining source for object removal, NOT as a target-domain substitute:
+# one synthetic edit type, none of the grading or codec nuisance real post-production
+# carries.
+#
+# NOT DOWNLOADED. See BMVC'21 arXiv:2101.11080. Ships as separate video and mask
+# archives per method, so a build step is needed first.
+#
+# scene_id is the SEQUENCE, never the method: VI/OP/CP are three renderings of the
+# same footage with the same mask, so splitting them apart is a pure near-duplicate
+# leak (root CLAUDE.md rule 2).
+
+name: dvi
+root: null
+
+methods: [VI, OP, CP]
+dir_inpainted: inpainted
+dir_original: original
+dir_mask: mask
+
+# No official split for our purposes; we define one at sequence level and document it.
+split_ratios:
+  train: 0.7
+  val: 0.15
+  test: 0.15
+split_seed: 0
+
+# Adjacent frames of one sequence are near-duplicates. Stride thins them; the
+# sequence-level split is what actually prevents the leak.
+frame_stride: 1
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.0
+    rot90: 0.0
+    affine_p: 0.3
+    rotate: 5.0
+    translate: 0.03
+    scale: [0.95, 1.05]
+  photometric:
+    brightness_contrast_p: 0.5
+    gamma_p: 0.3
+    blur_p: 0.15
+    jpeg_p: 0.25

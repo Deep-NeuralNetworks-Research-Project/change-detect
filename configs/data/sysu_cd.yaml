@@ -1,0 +1,39 @@
+# SYSU-CD — 20,000 aerial pairs, Hong Kong 2007-2014, 256x256 @ 0.5 m GSD.
+#
+# Official split 12,000 / 4,000 / 4,000, given by the directory structure and used
+# unmodified. Changed-pixel ratio 21.8% (research/02 §2) — by far the mildest
+# imbalance of our three public sets, which makes it the "easy" pretraining stage
+# before fine-tuning on something sparser.
+#
+# Licence: no LICENSE file in the repo. Treat as research-only. See docs/DATA_CARD.md.
+
+name: sysu_cd
+
+# null -> ${data_root}/sysu_cd. Override with data.root=/some/path, or set
+# CDLIB_DATA_ROOT, rather than editing this file.
+root: null
+
+# Archive layout. Parameterised because the real archive cannot be verified until
+# it is downloaded — a surprise should be a one-line fix here, not a code change.
+dir_time1: time1
+dir_time2: time2
+dir_label: label
+
+# nuisance_label is UNKNOWN (-1) for every sample: SYSU-CD's nuisance content is
+# undocumented, and claiming "clean" would silently corrupt P5's stratified eval.
+
+transforms:
+  seed: 0
+  geometric:
+    hflip: 0.5
+    vflip: 0.5      # aerial imagery has no canonical "up", unlike street-level
+    rot90: 0.5
+    affine_p: 0.5
+    rotate: 10.0
+    translate: 0.05
+    scale: [0.9, 1.1]
+  photometric:
+    brightness_contrast_p: 0.8
+    gamma_p: 0.5
+    blur_p: 0.2
+    jpeg_p: 0.3

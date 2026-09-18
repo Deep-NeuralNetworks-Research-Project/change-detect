@@ -1,0 +1,48 @@
+# CODEOWNERS — copy to .github/CODEOWNERS at the repo root.
+#
+# ORDER MATTERS: for a given file, the LAST matching line wins.
+# Do not sort this file alphabetically — the specific overrides at the
+# bottom of each block must stay below the directory rules above them.
+#
+# Replace @P1..@P5 with real GitHub handles once roles are assigned.
+
+# ---- P1  Data lead ----------------------------------------------------
+/src/cdlib/data/                        @P1
+/scripts/                               @P1
+/docs/DATA_CARD.md                      @P1
+/docs/ETHICS.md                         @P1
+/docs/figure_clearance.md               @P1
+
+# ---- P2  Baseline & infrastructure lead -------------------------------
+/src/cdlib/engine/                      @P2
+/src/cdlib/cli/                         @P2
+/src/cdlib/utils/                       @P2
+/configs/                               @P2
+/.github/                               @P2
+/notebooks/                             @P2
+/src/cdlib/models/build.py              @P2
+/src/cdlib/models/baselines/rgb_ssim.py       @P2
+/src/cdlib/models/baselines/fc_siam_diff.py   @P2
+/src/cdlib/losses/bce_dice.py           @P2
+
+# ---- P3  Modeling A: encoders, fusion, decoders ------------------------
+/src/cdlib/models/encoders/             @P3
+/src/cdlib/models/fusion/               @P3
+/src/cdlib/models/decoders/             @P3
+/src/cdlib/models/baselines/siamese_resnet18.py  @P3
+
+# ---- P4  Modeling B: alignment, heads, consistency loss ----------------
+/src/cdlib/models/alignment/            @P4
+/src/cdlib/models/heads/                @P4
+/src/cdlib/models/proposed.py           @P4
+/src/cdlib/losses/pair_order_consistency.py  @P4
+/src/cdlib/losses/calibration.py        @P4
+
+# ---- P5  Metrics & integration ----------------------------------------
+/src/cdlib/metrics/                     @P5
+/paper/                                 @P5
+# MUST stay below P2's /src/cdlib/cli/ rule above — later line wins.
+/src/cdlib/cli/benchmark.py             @P5
+
+# ---- Shared: contract changes need the whole team ----------------------
+/docs/architecture.md                   @P1 @P2 @P3 @P4 @P5

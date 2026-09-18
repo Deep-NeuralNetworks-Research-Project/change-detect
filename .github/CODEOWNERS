@@ -1,0 +1,43 @@
+# CODEOWNERS — DO NOT SORT ALPHABETICALLY
+# GitHub applies last-match-wins. The ordering below is intentional.
+# Sorting silently transfers ownership of /src/cdlib/cli/benchmark.py
+# from P5 to P2, because P2's broader /src/cdlib/cli/ pattern would win.
+
+# P1 — Data lead
+/src/cdlib/data/                        @Thisen-Ekanayake
+/scripts/                               @Thisen-Ekanayake
+
+# P2 — Baseline/Infra lead
+/src/cdlib/engine/                      @P2
+/src/cdlib/cli/                         @P2
+/src/cdlib/utils/                       @P2
+/configs/                               @P2
+/.github/                               @P2
+/notebooks/                             @P2
+/src/cdlib/models/build.py              @P2
+/src/cdlib/models/_model_registry.py    @P2
+/src/cdlib/models/baselines/rgb_ssim.py        @P2
+/src/cdlib/models/baselines/fc_siam_diff.py    @P2
+/src/cdlib/losses/bce_dice.py           @P2
+
+# P3 — Modeling A (encoders/fusion)
+/src/cdlib/models/encoders/             @weenukarajapaksha
+/src/cdlib/models/fusion/               @weenukarajapaksha
+/src/cdlib/models/decoders/             @weenukarajapaksha
+/src/cdlib/models/baselines/siamese_resnet18.py  @weenukarajapaksha
+
+# P4 — Modeling B (alignment/novelty)
+/src/cdlib/models/alignment/            @P4
+/src/cdlib/models/heads/                @P4
+/src/cdlib/models/proposed.py           @P4
+/src/cdlib/losses/pair_order_consistency.py  @P4
+/src/cdlib/losses/calibration.py        @P4
+
+# P5 — Metrics/Integration lead
+# This MUST come after P2's /src/cdlib/cli/ line (last-match-wins)
+/src/cdlib/cli/benchmark.py             @KusalPabasara
+/src/cdlib/cli/evaluate.py              @KusalPabasara
+/src/cdlib/cli/export_masks.py          @KusalPabasara
+/src/cdlib/metrics/                     @KusalPabasara
+/paper/                                 @KusalPabasara
+/docs/                                  @KusalPabasara

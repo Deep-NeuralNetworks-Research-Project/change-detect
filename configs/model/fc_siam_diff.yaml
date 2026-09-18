@@ -1,0 +1,13 @@
+# FC-Siam-Diff via TorchGeo
+# NOTE: NOT identical to Daudt's original 4-stage 16/32/64/128 net.
+# This is a re-implementation on SMP UNet decoder. Note the substitution.
+#
+# encoder_name is swappable — same code path serves:
+# - FC-Siam-Diff baseline (default encoder)
+# - P3's ResNet-18 baseline (encoder_name: resnet18)
+# - P4's proposed model (encoder_name: efficientnet-b0)
+
+name: fc_siam_diff
+encoder_name: resnet18
+encoder_weights: imagenet
+in_channels: 3

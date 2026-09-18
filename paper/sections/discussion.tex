@@ -1,0 +1,23 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Protocol before architecture.}
+If a number looks surprisingly good, suspect split leakage and metric
+pooling before celebrating an architectural gain
+\cite{corley_2024_reality}.
+
+\paragraph{Loss vs.\ calibration.}
+BCE+Dice is the right overlap objective under 2--5\% prevalence and
+the wrong calibration objective \cite{mehrtash_2020_calibration}.
+Temperature scaling on shift data is the cheap, default remedy
+\cite{ovadia_2019_shift}; a calibration-aware auxiliary term is the
+escalation path.
+
+\paragraph{Deferral, not autonomy.}
+Pair-level AURC answers ``which pairs should a human see.'' Pixel-
+fragmented deferral maps are the wrong UX for this product.
+
+\paragraph{Limitations.}
+Free-tier GPUs, $n=3$ seeds, authorised video set may not land
+(escape hatch: report as paired-image CD only). WHU-CD is not used as
+a comparable leaderboard number given documented split leakage.
