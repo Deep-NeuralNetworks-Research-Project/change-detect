@@ -14,6 +14,7 @@
 /configs/                               @P2
 /.github/                               @P2
 /notebooks/                             @P2
+/modal_app.py                           @P2
 /src/cdlib/models/build.py              @P2
 /src/cdlib/models/_model_registry.py    @P2
 /src/cdlib/models/baselines/rgb_ssim.py        @P2

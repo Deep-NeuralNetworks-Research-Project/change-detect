@@ -6,6 +6,12 @@ defaults:
   - train: default
   - _self_
 
+# Runtime paths. Modal injects data_root=/vol/data and results_dir=/opt/cdlib/results.
+# Local default: datasets under ./data/<name>, runs under ./results/<experiment_name>.
+data_root: null
+results_dir: results
+experiment_name: null
+
 # Override with: python -m cdlib.cli.train data=levir_cd model=siamese_resnet18
 # Ablation:      python -m cdlib.cli.train +experiment=ablation_no_alignment
 # Multirun:      python -m cdlib.cli.train -m train.lr=1e-3,3e-4,1e-4

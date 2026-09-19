@@ -39,9 +39,10 @@ CLAUDE.local.md
 # Video data — restricted, never commit
 data/video_raw/
 
-# Results and checkpoints (tracked via W&B / Drive, not git)
+# Results and checkpoints (tracked via W&B / Drive / Modal Volumes, not git)
 results/
 checkpoints/
+modal-results/
 
 # Raw / processed datasets
 data/raw/

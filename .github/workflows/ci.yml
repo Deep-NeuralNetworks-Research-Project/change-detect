@@ -24,9 +24,9 @@ jobs:
       - name: Install linters
         run: pip install ruff black
       - name: Ruff check
-        run: ruff check src/ tests/ configs/
+        run: ruff check src/ tests/ configs/ modal_app.py
       - name: Black check
-        run: black --check src/ tests/ configs/
+        run: black --check src/ tests/ configs/ modal_app.py
 
   test:
     name: Tests (CPU, synthetic data)

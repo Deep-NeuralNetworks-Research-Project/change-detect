@@ -33,6 +33,56 @@ pip install -e ".[dev]"
 pytest -m "not gpu and not slow" -q
 ```
 
+## Train on Modal
+
+`modal_app.py` is a thin driver (same rule as the Colab/Kaggle notebooks): it
+mounts Volumes and execs `python -m cdlib.cli.train`. No model/loss/data logic
+lives there. The GPU image installs a **CUDA** PyTorch wheel.
+
+```bash
+pip install -e ".[modal]"
+modal setup                          # once; opens the browser for a token
+
+# GPU + CUDA torch sanity check (no dataset required)
+modal run modal_app.py --smoke --gpu T4
+
+# See the named jobs / suites
+modal run modal_app.py --list-jobs
+
+# Upload a dataset already prepared locally (LEVIR-CD shown)
+modal volume put cdlib-data data/levir_cd /levir_cd
+# equivalent: modal run modal_app.py --upload data/levir_cd --dest levir_cd
+
+# One named job
+modal run --detach modal_app.py --job siamese-levir --gpu T4
+
+# Whole paper matrix (baselines + proposed + ablations), 3 seeds
+modal run --detach modal_app.py --suite all --gpu L4 --seeds 0,1,2
+
+# Ad-hoc Hydra overrides still work
+modal run --detach modal_app.py --gpu T4 \
+  --overrides "data=levir_cd model=siamese_resnet18 train.epochs=20"
+
+# Optional W&B: export the key, or create a Modal secret and
+#   export MODAL_WANDB_SECRET=wandb
+export WANDB_API_KEY=...
+
+# Pull artefacts
+modal volume ls cdlib-results
+modal volume get cdlib-results / ./modal-results
+```
+
+`--suite all` fans out one Modal Function per (job × seed). `--detach` keeps
+them alive if you close the laptop. Default GPU is a T4 (Colab-class); pass
+`--gpu L4` or `--gpu T4,L4` for a fallback list. Checkpoints flush to Volume
+`cdlib-results` every minute plus every 15 minutes from the trainer;
+re-running the same `--job` resumes (`train.checkpoint.resume_from=auto`).
+`--dry` prints the Hydra argv without launching a GPU.
+
+Public datasets are **manual downloads** (Google Drive / OneDrive). After the
+archive is on the Volume, `modal run modal_app.py --extract levir_cd` runs the
+repo verify/extract script.
+
 ## Commands
 
 ```bash
@@ -49,6 +99,10 @@ python -m cdlib.cli.export_masks exp_id=demo --overlays best,median,worst
 
 # Dry-construct every experiment config (CI)
 python -m cdlib.cli.validate_configs
+
+# Train on Modal (see "Train on Modal" below)
+modal run modal_app.py --smoke --gpu T4
+modal run --detach modal_app.py --gpu T4 --overrides "data=levir_cd model=siamese_resnet18"
 ```
 
 ## Layout

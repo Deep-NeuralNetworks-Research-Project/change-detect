@@ -10,11 +10,32 @@ Usage:
 from __future__ import annotations
 
 import logging
+import os
+from pathlib import Path
 
 import hydra
 from omegaconf import DictConfig
 
 logger = logging.getLogger(__name__)
+
+
+def _run_dir(cfg: DictConfig) -> str:
+    """Resolve the trainer run directory.
+
+    Prefer ``cfg.results_dir`` (Modal sets this to the results Volume).
+    Relative paths are joined to Hydra's original cwd so local runs still
+    land in ``./results/<experiment_name>``.
+    """
+    name = cfg.get("experiment_name")
+    if not name:
+        name = f"{cfg.model.name}_{cfg.data.name}"
+    results = cfg.get("results_dir") or os.environ.get("CDLIB_RESULTS_ROOT")
+    if not results:
+        results = str(Path(hydra.utils.get_original_cwd()) / "results")
+    results_path = Path(str(results)).expanduser()
+    if not results_path.is_absolute():
+        results_path = Path(hydra.utils.get_original_cwd()) / results_path
+    return str(results_path / str(name))
 
 
 @hydra.main(version_base=None, config_path="../../../configs", config_name="config")
@@ -41,10 +62,7 @@ def main(cfg: DictConfig) -> None:
     # Otherwise, fall back to a synthetic dataset for testing.
     train_loader, val_loader = _build_dataloaders(cfg)
 
-    # Run directory from Hydra's output dir
-    run_dir = hydra.utils.get_original_cwd() + "/results/" + cfg.get(
-        "experiment_name", f"{cfg.model.name}_{cfg.data.name}"
-    )
+    run_dir = _run_dir(cfg)
 
     # Create and run trainer
     trainer = Trainer(
