@@ -21,6 +21,7 @@
 /.github/                               @P2
 /notebooks/                             @P2
 /modal_app.py                           @P2
+/train.py                               @P2
 /src/cdlib/models/build.py              @P2
 /src/cdlib/models/baselines/rgb_ssim.py       @P2
 /src/cdlib/models/baselines/fc_siam_diff.py   @P2

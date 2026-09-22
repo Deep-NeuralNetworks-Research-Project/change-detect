@@ -192,6 +192,27 @@ def expand_suite(
     return out
 
 
+def modal_cli_argv(argv: list[str], script: str) -> list[str]:
+    """Turn ``python train.py ...`` into ``modal run [--detach] <script> ...``.
+
+    ``--detach`` belongs to the ``modal run`` CLI, so it is hoisted in front
+    of the script. Every other token is an entrypoint argument.
+    """
+    detach = False
+    rest: list[str] = []
+    for tok in argv:
+        if tok == "--detach":
+            detach = True
+        else:
+            rest.append(tok)
+    cmd = ["modal", "run"]
+    if detach:
+        cmd.append("--detach")
+    cmd.append(script)
+    cmd.extend(rest)
+    return cmd
+
+
 def train_command(hydra_args: list[str], *, python: str | None = None) -> list[str]:
     """Full subprocess argv, including Hydra's config-path flags.
 

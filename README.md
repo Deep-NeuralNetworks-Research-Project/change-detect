@@ -35,32 +35,35 @@ pytest -m "not gpu and not slow" -q
 
 ## Train on Modal
 
-`modal_app.py` is a thin driver (same rule as the Colab/Kaggle notebooks): it
-mounts Volumes and execs `python -m cdlib.cli.train`. No model/loss/data logic
-lives there. The GPU image installs a **CUDA** PyTorch wheel.
+`train.py` is the command. It loads the same driver as `modal_app.py`: a thin
+wrapper (same rule as the Colab/Kaggle notebooks) that mounts Volumes and execs
+`python -m cdlib.cli.train`. No model/loss/data logic lives there. The GPU
+image installs a **CUDA** PyTorch wheel. `modal run modal_app.py ...` still
+works; the flags are identical.
 
 ```bash
 pip install -e ".[modal]"
 modal setup                          # once; opens the browser for a token
 
 # GPU + CUDA torch sanity check (no dataset required)
-modal run modal_app.py --smoke --gpu T4
+modal run train.py --smoke --gpu T4
 
 # See the named jobs / suites
-modal run modal_app.py --list-jobs
+modal run train.py --list-jobs
 
 # Upload a dataset already prepared locally (LEVIR-CD shown)
 modal volume put cdlib-data data/levir_cd /levir_cd
-# equivalent: modal run modal_app.py --upload data/levir_cd --dest levir_cd
+# equivalent: modal run train.py --upload data/levir_cd --dest levir_cd
 
-# One named job
-modal run --detach modal_app.py --job siamese-levir --gpu T4
+# One named job (`python train.py` is the same call)
+modal run --detach train.py --job siamese-levir --gpu T4
+python train.py --detach --job proposed-levir --gpu T4
 
 # Whole paper matrix (baselines + proposed + ablations), 3 seeds
-modal run --detach modal_app.py --suite all --gpu L4 --seeds 0,1,2
+modal run --detach train.py --suite all --gpu L4 --seeds 0,1,2
 
 # Ad-hoc Hydra overrides still work
-modal run --detach modal_app.py --gpu T4 \
+modal run --detach train.py --gpu T4 \
   --overrides "data=levir_cd model=siamese_resnet18 train.epochs=20"
 
 # Optional W&B: export the key, or create a Modal secret and
@@ -80,7 +83,7 @@ re-running the same `--job` resumes (`train.checkpoint.resume_from=auto`).
 `--dry` prints the Hydra argv without launching a GPU.
 
 Public datasets are **manual downloads** (Google Drive / OneDrive). After the
-archive is on the Volume, `modal run modal_app.py --extract levir_cd` runs the
+archive is on the Volume, `modal run train.py --extract levir_cd` runs the
 repo verify/extract script.
 
 ## Commands
@@ -100,9 +103,9 @@ python -m cdlib.cli.export_masks exp_id=demo --overlays best,median,worst
 # Dry-construct every experiment config (CI)
 python -m cdlib.cli.validate_configs
 
-# Train on Modal (see "Train on Modal" below)
-modal run modal_app.py --smoke --gpu T4
-modal run --detach modal_app.py --gpu T4 --overrides "data=levir_cd model=siamese_resnet18"
+# Train on Modal (see "Train on Modal" above)
+modal run train.py --smoke --gpu T4
+modal run --detach train.py --gpu T4 --overrides "data=levir_cd model=siamese_resnet18"
 ```
 
 ## Layout

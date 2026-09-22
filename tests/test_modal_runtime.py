@@ -17,6 +17,7 @@ from cdlib.cli.modal_runtime import (
     dataset_name_from_overrides,
     dataset_root,
     expand_suite,
+    modal_cli_argv,
     parse_gpu,
     parse_overrides,
     parse_seeds,
@@ -143,3 +144,23 @@ def test_expand_suite_rejects_both():
 def test_job_overrides_unknown():
     with pytest.raises(KeyError, match="unknown job"):
         expand_suite(job="not-a-job")
+
+
+def test_modal_cli_argv_hoists_detach():
+    assert modal_cli_argv(["--job", "siamese-levir", "--gpu", "T4"], "train.py") == [
+        "modal",
+        "run",
+        "train.py",
+        "--job",
+        "siamese-levir",
+        "--gpu",
+        "T4",
+    ]
+    assert modal_cli_argv(["--job", "proposed-levir", "--detach"], "/repo/train.py") == [
+        "modal",
+        "run",
+        "--detach",
+        "/repo/train.py",
+        "--job",
+        "proposed-levir",
+    ]
