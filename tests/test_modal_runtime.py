@@ -16,12 +16,15 @@ from cdlib.cli.modal_runtime import (
     build_train_argv,
     dataset_name_from_overrides,
     dataset_root,
+    default_effnet_overrides,
+    default_effnet_run,
     expand_suite,
     modal_cli_argv,
     parse_gpu,
     parse_overrides,
     parse_seeds,
     preflight_dataset,
+    select_train_gpu,
     train_command,
 )
 
@@ -144,6 +147,42 @@ def test_expand_suite_rejects_both():
 def test_job_overrides_unknown():
     with pytest.raises(KeyError, match="unknown job"):
         expand_suite(job="not-a-job")
+
+
+def test_default_effnet_overrides_injects_proposed_model():
+    ov = default_effnet_overrides([])
+    assert ov[:2] == ["model=proposed_effnet", "loss=bce_dice_pairorder"]
+    assert "train.epochs=100" in ov
+    assert "train.batch_size=32" in ov
+    assert "train.optimizer.lr=6e-4" in ov
+    name, with_data = default_effnet_run(["data=levir_cd"])
+    assert name == "effnet-levir_cd"
+    assert with_data[0] == "model=proposed_effnet"
+    assert with_data[-1] == "data=levir_cd"
+
+
+def test_default_effnet_speed_keys_yield_to_user():
+    ov = default_effnet_overrides(["data=sysu_cd", "train.epochs=20"])
+    assert "train.epochs=20" in ov
+    assert "train.epochs=100" not in ov
+    assert "train.batch_size=32" in ov
+
+
+def test_select_train_gpu_uses_a100_for_effnet():
+    assert select_train_gpu("") == "A100"
+    assert select_train_gpu("", job="proposed-sysu") == "A100"
+    assert select_train_gpu("", job="fcsiam-sysu") == "T4"
+    assert select_train_gpu("", suite="all") == "T4"
+    assert select_train_gpu("L4", job="proposed-levir") == "L4"
+
+
+def test_default_effnet_overrides_respects_explicit_model():
+    assert default_effnet_overrides(["model=fc_siam_diff"]) == ["model=fc_siam_diff"]
+    assert default_effnet_overrides(["+experiment=baseline_fcsiamdiff_sysu"]) == [
+        "+experiment=baseline_fcsiamdiff_sysu"
+    ]
+    kept = default_effnet_overrides(["model=proposed_effnet", "loss=bce_dice", "data=pcd"])
+    assert kept == ["model=proposed_effnet", "loss=bce_dice", "data=pcd"]
 
 
 def test_modal_cli_argv_hoists_detach():

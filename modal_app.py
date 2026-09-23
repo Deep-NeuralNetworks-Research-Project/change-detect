@@ -55,11 +55,13 @@ from cdlib.cli.modal_runtime import (  # noqa: E402
     build_train_argv,
     dataset_name_from_overrides,
     dataset_root,
+    default_effnet_run,
     expand_suite,
     parse_gpu,
     parse_overrides,
     parse_seeds,
     preflight_dataset,
+    select_train_gpu,
     train_command,
 )
 
@@ -284,7 +286,7 @@ def extract_remote(dataset: str) -> str:
 
 @app.local_entrypoint()
 def main(
-    gpu: str = DEFAULT_GPU,
+    gpu: str = "",
     overrides: str = "",
     timeout_hours: float = DEFAULT_TIMEOUT_HOURS,
     resume: bool = True,
@@ -329,7 +331,7 @@ def main(
         print(ls_remote.remote())
         return
     if smoke:
-        print(smoke_remote.with_options(gpu=parse_gpu(gpu)).remote())
+        print(smoke_remote.with_options(gpu=parse_gpu(gpu.strip() or DEFAULT_GPU)).remote())
         return
 
     extra = parse_overrides(overrides)
@@ -344,8 +346,9 @@ def main(
             extra=extra,
         )
     else:
-        run_name = extra and dataset_name_from_overrides(extra) or "adhoc"
-        runs = [(run_name, extra)]
+        # No --job and no --suite: proposed EfficientNet-B0, not the
+        # Hydra default (FC-Siam-Diff / ResNet-18).
+        runs = [default_effnet_run(extra)]
 
     planned: list[tuple[str, list[str]]] = []
     for run_name, ov in runs:
@@ -362,8 +365,10 @@ def main(
         print(f"[modal] dry-run: {len(planned)} job(s) not launched")
         return
 
+    chosen_gpu = select_train_gpu(gpu, job=job, suite=suite)
     kwargs: dict = {
-        "gpu": parse_gpu(gpu),
+        "gpu": parse_gpu(chosen_gpu),
+        "cpu": 8.0,
         "timeout": int(float(timeout_hours) * 3600),
         "secrets": _wandb_secrets(),
     }

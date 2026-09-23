@@ -55,9 +55,14 @@ modal run train.py --list-jobs
 modal volume put cdlib-data data/levir_cd /levir_cd
 # equivalent: modal run train.py --upload data/levir_cd --dest levir_cd
 
-# One named job (`python train.py` is the same call)
-modal run --detach train.py --job siamese-levir --gpu T4
-python train.py --detach --job proposed-levir --gpu T4
+# Default: EfficientNet-B0 on an A100, ~6h speed recipe (100 epochs, batch 32)
+# Checkpoints in effnet-sysu_cd. LEVIR-CD: add --overrides "data=levir_cd"
+modal run --detach train.py
+python train.py --detach --overrides "data=levir_cd"
+
+# Same model and speed recipe, named jobs
+modal run --detach train.py --job proposed-sysu
+modal run --detach train.py --job proposed-levir
 
 # Whole paper matrix (baselines + proposed + ablations), 3 seeds
 modal run --detach train.py --suite all --gpu L4 --seeds 0,1,2

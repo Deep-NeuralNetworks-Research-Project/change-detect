@@ -26,7 +26,25 @@ RESULTS_VOLUME = "cdlib-results"
 
 DEFAULT_DATASET = "sysu_cd"
 DEFAULT_GPU = "T4"
+# EfficientNet launches (bare ``modal run train.py`` and the proposed-* jobs)
+# request an A100. Batch 8 leaves that GPU idle; the speed overrides below
+# raise the batch and shorten the schedule so a SYSU run lands near 6 hours.
+# That figure is an estimate from the T4/A100 notes in the research briefs,
+# not a measured step time.
+TRAIN_GPU = "A100"
 DEFAULT_TIMEOUT_HOURS = 12.0
+
+# Paper recipe is 200 epochs, batch 8, AdamW 3e-4. This speed recipe keeps
+# the same optimizer and scales the learning rate by sqrt(32/8) = 2.
+# 100 epochs and validation every 4 epochs are what bring the wall clock
+# down; cosine T_max follows train.epochs.
+EFFNET_SPEED: tuple[tuple[str, str], ...] = (
+    ("train.epochs", "100"),
+    ("train.batch_size", "32"),
+    ("train.optimizer.lr", "6e-4"),
+    ("train.val_interval", "4"),
+    ("data.num_workers", "8"),
+)
 
 # Named jobs → extra Hydra overrides. Shared with ``modal_app.py --job``.
 # Dataset name is inferred from ``data=`` / ``+experiment=`` (experiments
@@ -42,11 +60,13 @@ JOBS: dict[str, list[str]] = {
         "data=levir_cd",
         "model=proposed_effnet",
         "loss=bce_dice_pairorder",
+        *(f"{key}={value}" for key, value in EFFNET_SPEED),
     ],
     "proposed-sysu": [
         "data=sysu_cd",
         "model=proposed_effnet",
         "loss=bce_dice_pairorder",
+        *(f"{key}={value}" for key, value in EFFNET_SPEED),
     ],
     "ablation-no-align": ["+experiment=ablation_no_alignment"],
     "ablation-no-pairorder": ["+experiment=ablation_no_pairorder"],
@@ -146,6 +166,65 @@ def build_train_argv(
     if epochs is not None and "train.epochs" not in keys:
         injected.append(f"train.epochs={int(epochs)}")
     return injected + user
+
+
+# Bare ``modal run train.py`` (no --job / --suite) trains this model.
+# EfficientNet-B0 ImageNet, signed fusion, bounded alignment, pair-order loss.
+# An explicit ``model=`` or ``+experiment=`` on the command line replaces it.
+EFFNET_MODEL = "proposed_effnet"
+EFFNET_LOSS = "bce_dice_pairorder"
+
+
+def _has_model_choice(overrides: list[str]) -> bool:
+    for token in overrides:
+        key = _override_key(token)
+        if key in {"model", "model.name", "experiment"}:
+            return True
+    return False
+
+
+def default_effnet_overrides(extra: list[str] | None = None) -> list[str]:
+    """Hydra overrides for an EfficientNet-only launch.
+
+    Dataset and other tokens in ``extra`` are kept. ``model=`` and
+    ``+experiment=`` already in ``extra`` are left unchanged.
+    """
+    user = list(extra or [])
+    if _has_model_choice(user):
+        return user
+    keys = {_override_key(t) for t in user}
+    injected: list[str] = [f"model={EFFNET_MODEL}"]
+    if "loss" not in keys:
+        injected.append(f"loss={EFFNET_LOSS}")
+    for key, value in EFFNET_SPEED:
+        if key not in keys:
+            injected.append(f"{key}={value}")
+    return injected + user
+
+
+def select_train_gpu(gpu: str = "", *, job: str = "", suite: str = "") -> str:
+    """GPU for a training launch.
+
+    An explicit ``--gpu`` is kept. A bare EfficientNet launch and the
+    ``proposed-*`` jobs use :data:`TRAIN_GPU`. Every other job stays on
+    :data:`DEFAULT_GPU`.
+    """
+    chosen = str(gpu).strip()
+    if chosen:
+        return chosen
+    if not suite and (not job or job.startswith("proposed-")):
+        return TRAIN_GPU
+    return DEFAULT_GPU
+
+
+def default_effnet_run(extra: list[str] | None = None) -> tuple[str, list[str]]:
+    """``(experiment_name, overrides)`` for a bare EfficientNet launch.
+
+    Checkpoints land in ``effnet-<dataset>`` on the results Volume.
+    """
+    overrides = default_effnet_overrides(extra)
+    dataset = dataset_name_from_overrides(overrides)
+    return f"effnet-{dataset}", overrides
 
 
 def job_overrides(job: str) -> list[str]:

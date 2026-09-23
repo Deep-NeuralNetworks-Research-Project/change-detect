@@ -6,9 +6,17 @@ loss, or data logic. The remote process is ``python -m cdlib.cli.train``.
 
     modal run train.py --list-jobs
     modal run train.py --smoke --gpu T4
-    modal run --detach train.py --job proposed-levir --gpu T4
-    modal run --detach train.py --suite all --gpu L4 --seeds 0,1,2
-    python train.py --job siamese-levir --gpu T4
+    modal run --detach train.py
+    modal run --detach train.py --overrides "data=levir_cd"
+    modal run --detach train.py --job proposed-levir
+
+A launch with no ``--job`` and no ``--suite`` trains the proposed
+EfficientNet-B0 model on an A100. The speed recipe is 100 epochs, batch
+32, AdamW 6e-4, validation every 4 epochs, aimed at about 6 hours on
+SYSU-CD. Checkpoints are written under ``effnet-sysu_cd``. Pass
+``data=levir_cd`` for LEVIR-CD (``effnet-levir_cd``). An explicit
+``model=`` or ``+experiment=`` replaces that default. ``--gpu T4`` forces
+the slower GPU.
 
 ``python train.py`` forwards to ``modal run`` on this file. Put ``--detach``
 anywhere in that command; it is hoisted onto ``modal run``.
